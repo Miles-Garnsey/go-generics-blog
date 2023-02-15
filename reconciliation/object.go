@@ -19,11 +19,10 @@ func ReconcileObject[U Reconcilable[U]](ctx context.Context, kClient client.Clie
 		Namespace: desiredObject.GetNamespace(),
 	}
 	currentObject := new(U)
-
-	err := kClient.Get(ctx, desiredObjectName, currentObject)
+	err := kClient.Get(ctx, desiredObjectName, *currentObject)
 	if err != nil {
 		return err
 	}
-	desiredObject.DeepCopyInto(currentObject)
+	desiredObject.DeepCopyInto(*currentObject)
 	return nil
 }

@@ -7,13 +7,13 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-type Reconcilable interface {
+type Reconcilable[T any] interface {
 	client.Object
-	DeepCopy() client.Object
-	DeepCopyInto(client.Object)
+	DeepCopy() T
+	DeepCopyInto(T)
 }
 
-func ReconcileObject(ctx context.Context, kClient client.Client, desiredObject Reconcilable) error {
+func ReconcileObject[U Reconcilable[U]](ctx context.Context, kClient client.Client, desiredObject U) error {
 	desiredObjectName := types.NamespacedName{
 		Name:      desiredObject.GetName(),
 		Namespace: desiredObject.GetNamespace(),

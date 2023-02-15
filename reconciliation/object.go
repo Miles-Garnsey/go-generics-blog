@@ -18,7 +18,7 @@ func ReconcileObject[U Reconcilable[U]](ctx context.Context, kClient client.Clie
 		Name:      desiredObject.GetName(),
 		Namespace: desiredObject.GetNamespace(),
 	}
-	var currentObject U
+	currentObject := new(U)
 
 	err := kClient.Get(ctx, desiredObjectName, currentObject)
 	if err != nil {

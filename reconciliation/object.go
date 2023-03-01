@@ -3,6 +3,7 @@ package reconciliation
 import (
 	"context"
 
+	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
@@ -16,14 +17,14 @@ type Reconcilable[T any] interface {
 
 func ReconcileObject[T any, U Reconcilable[T]](ctx context.Context, kClient client.Client, desiredObject T) error {
 	desiredObjectName := types.NamespacedName{
-		Name:      (&desiredObject).GetName(),
-		Namespace: (&desiredObject).GetNamespace(),
+		Name:      U(&desiredObject).GetName(),
+		Namespace: U(&desiredObject).GetNamespace(),
 	}
 	currentObject := new(T)
-	err := kClient.Get(ctx, desiredObjectName, &currentObject)
-	if err != nil {
+	err := kClient.Get(ctx, desiredObjectName, U(currentObject))
+	if err != nil && !errors.IsNotFound(err) {
 		return err
 	}
-	(&desiredObject).DeepCopyInto(currentObject)
+	U(&desiredObject).DeepCopyInto(currentObject)
 	return nil
 }

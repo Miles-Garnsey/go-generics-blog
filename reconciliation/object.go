@@ -9,11 +9,12 @@ import (
 
 type Reconcilable[T any] interface {
 	client.Object
-	DeepCopy() T
-	DeepCopyInto(T)
+	DeepCopy() *T
+	DeepCopyInto(*T)
+	*T
 }
 
-func ReconcileObject[U Reconcilable[U]](ctx context.Context, kClient client.Client, desiredObject U) error {
+func ReconcileObject[T any, U Reconcilable[T]](ctx context.Context, kClient client.Client, desiredObject T) error {
 	desiredObjectName := types.NamespacedName{
 		Name:      desiredObject.GetName(),
 		Namespace: desiredObject.GetNamespace(),

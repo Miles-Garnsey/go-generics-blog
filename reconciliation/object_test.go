@@ -21,6 +21,6 @@ func ReconcileObject_Test(t *testing.T) {
 	client := fake.NewClientBuilder().
 		Build()
 
-	err := ReconcileObject(ctx, client, &desiredObject)
+	err := ReconcileObject(ctx, client, desiredObject)
 	assert.NoError(t, err)
 }

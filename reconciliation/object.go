@@ -16,14 +16,14 @@ type Reconcilable[T any] interface {
 
 func ReconcileObject[T any, U Reconcilable[T]](ctx context.Context, kClient client.Client, desiredObject T) error {
 	desiredObjectName := types.NamespacedName{
-		Name:      desiredObject.GetName(),
-		Namespace: desiredObject.GetNamespace(),
+		Name:      (&desiredObject).GetName(),
+		Namespace: (&desiredObject).GetNamespace(),
 	}
-	currentObject := new(U)
-	err := kClient.Get(ctx, desiredObjectName, *currentObject)
+	currentObject := new(T)
+	err := kClient.Get(ctx, desiredObjectName, &currentObject)
 	if err != nil {
 		return err
 	}
-	desiredObject.DeepCopyInto(*currentObject)
+	(&desiredObject).DeepCopyInto(currentObject)
 	return nil
 }
